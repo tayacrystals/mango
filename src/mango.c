@@ -414,6 +414,7 @@ struct Client {
 	double old_master_mfact_per, old_master_inner_per, old_stack_inner_per;
 	double old_scroller_pproportion;
 	bool ismaster;
+	bool old_ismaster;
 	bool cursor_in_upper_half, cursor_in_left_half;
 	bool isleftstack;
 	int32_t tearing_hint;
@@ -817,6 +818,8 @@ static void last_cursor_surface_destroy(struct wl_listener *listener,
 										void *data);
 static int32_t keep_idle_inhibit(void *data);
 static void check_keep_idle_inhibit(Client *c);
+static void pre_caculate_before_arrange(Monitor *m, bool want_animation,
+										bool from_view, bool only_caculate);
 
 #include "data/static_keymap.h"
 #include "dispatch/bind_declare.h"
@@ -3907,6 +3910,7 @@ void init_client_properties(Client *c) {
 	c->swallowing = NULL;
 	c->swallowedby = NULL;
 	c->ismaster = 0;
+	c->old_ismaster = 0;
 	c->isleftstack = 0;
 	c->ismaximizescreen = 0;
 	c->isfullscreen = 0;
@@ -5045,6 +5049,10 @@ setfloating(Client *c, int32_t floating) {
 		restore_size_per(c->mon, c);
 	}
 
+	if (c->isfloating && !old_floating_state) {
+		save_old_size_per(c->mon);
+	}
+
 	if (!c->force_maximize)
 		client_set_maximized(c, false);
 
@@ -5131,6 +5139,10 @@ void setmaximizescreen(Client *c, int32_t maximizescreen) {
 		restore_size_per(c->mon, c);
 	}
 
+	if (c->ismaximizescreen && !old_maximizescreen_state) {
+		save_old_size_per(c->mon);
+	}
+
 	if (!c->force_maximize && !c->ismaximizescreen) {
 		client_set_maximized(c, false);
 	} else if (!c->force_maximize && c->ismaximizescreen) {
@@ -5200,6 +5212,10 @@ void setfullscreen(Client *c, int32_t fullscreen) // 用自定义全屏代理自
 
 	if (!c->isfullscreen && old_fullscreen_state) {
 		restore_size_per(c->mon, c);
+	}
+
+	if (c->isfullscreen && !old_fullscreen_state) {
+		save_old_size_per(c->mon);
 	}
 
 	arrange(c->mon, false, false);
