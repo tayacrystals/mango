@@ -122,12 +122,14 @@ int32_t exchange_stack_client(const Arg *arg) {
 
 	Client *c = selmon->sel;
 	Client *tc = NULL;
+	bool nowrap = arg->i2;
+
 	if (!c || c->isfloating || c->isfullscreen || c->ismaximizescreen)
 		return 0;
 	if (arg->i == NEXT) {
-		tc = get_next_stack_client(c, false);
+		tc = get_next_stack_client(c, false, nowrap);
 	} else {
-		tc = get_next_stack_client(c, true);
+		tc = get_next_stack_client(c, true, nowrap);
 	}
 	if (tc)
 		exchange_two_client(c, tc);
@@ -244,13 +246,14 @@ int32_t focusstack(const Arg *arg) {
 	/* Focus the next or previous client (in tiling order) on selmon */
 	Client *sel = focustop(selmon);
 	Client *tc = NULL;
+	bool nowrap = arg->i2;
 
 	if (!sel)
 		return 0;
 	if (arg->i == NEXT) {
-		tc = get_next_stack_client(sel, false);
+		tc = get_next_stack_client(sel, false, nowrap);
 	} else {
-		tc = get_next_stack_client(sel, true);
+		tc = get_next_stack_client(sel, true, nowrap);
 	}
 	/* If only one client is visible on selmon, then c == sel */
 

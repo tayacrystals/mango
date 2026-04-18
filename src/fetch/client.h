@@ -475,15 +475,19 @@ Client *focustop(Monitor *m) {
 	return NULL;
 }
 
-Client *get_next_stack_client(Client *c, bool reverse) {
+Client *get_next_stack_client(Client *c, bool reverse, bool nowrap) {
 	if (!c || !c->mon)
 		return NULL;
 
 	Client *next = NULL;
 	if (reverse) {
 		wl_list_for_each_reverse(next, &c->link, link) {
-			if (&next->link == &clients)
-				continue; /* wrap past the sentinel node */
+			if (&next->link == &clients) {
+				if (nowrap)
+					return NULL;
+				else
+					continue; /* wrap past the sentinel node */
+			}
 
 			if (next->isunglobal)
 				continue;
@@ -493,8 +497,12 @@ Client *get_next_stack_client(Client *c, bool reverse) {
 		}
 	} else {
 		wl_list_for_each(next, &c->link, link) {
-			if (&next->link == &clients)
-				continue; /* wrap past the sentinel node */
+			if (&next->link == &clients) {
+				if (nowrap)
+					return NULL;
+				else
+					continue; /* wrap past the sentinel node */
+			}
 
 			if (next->isunglobal)
 				continue;

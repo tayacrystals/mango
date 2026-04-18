@@ -779,7 +779,7 @@ static bool switch_scratchpad_client_state(Client *c);
 static bool check_trackpad_disabled(struct wlr_pointer *pointer);
 static uint32_t get_tag_status(uint32_t tag, Monitor *m);
 static void enable_adaptive_sync(Monitor *m, struct wlr_output_state *state);
-static Client *get_next_stack_client(Client *c, bool reverse);
+static Client *get_next_stack_client(Client *c, bool reverse, bool nowrap);
 static void set_float_malposition(Client *tc);
 static void set_size_per(Monitor *m, Client *c);
 static void resize_tile_client(Client *grabc, bool isdrag, int32_t offsetx,
